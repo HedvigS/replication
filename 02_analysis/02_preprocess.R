@@ -56,7 +56,7 @@ countBy <- function(groupingVar, normBy, dataSource) {
 #############################
 ### Load data             ###
 #############################
-df <- read_csv('../01_preprocessing/data/data.csv', na=c('')) %>%
+df <- read_csv('../01_preprocessing/data/data.csv', na=c(''), show_col_types = F) %>%
   mutate_if(is.character, factor) %>%
   mutate(
     vowelConsonant=ifelse(!is.na(height), 'vowel', 'consonant'),
