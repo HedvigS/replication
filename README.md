@@ -63,7 +63,11 @@ cldf createdb data/johanssonsoundsymbolic/cldf/cldf-metadata.json data/johansson
 cldf createdb data/glottolog/cldf/cldf-metadata.json data/glottolog.sqlite3
 ```
 
-Now you can create the `data.csv` file for further processing by retrieving the data from Lexibank: `python query.py`.
+Now you can create the `data.csv` file for further processing by retrieving the data from Lexibank:
+
+```shell
+python query.py
+```
 
 ## Running the analysis
 
