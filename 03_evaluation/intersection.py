@@ -12,7 +12,7 @@ def read_cl(path):
     return concept_dict
 
 
-BASE = "../../cldf_resources/concepticon-data/concepticondata/conceptlists/"
+BASE = "data/concepticon/concepticondata/conceptlists/"
 
 # Use local manipulation of Johansson to account for replaced '_' and brackets
 JOHANSSON = "Johansson-2020-344.tsv"

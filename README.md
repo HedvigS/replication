@@ -13,7 +13,7 @@ python3 -m venv venv/replication
 source venv/replication/bin/activate
 ```
 
-You can now install the packages with pip.
+You can now install the packages with pip. We have used Python 3.13 for the code. Older versions might not work for the provided package versions.
 
 ```shell
 pip install -r requirements.txt
@@ -43,6 +43,7 @@ git clone https://github.com/cldf-clts/clts data/clts --branch v2.3.0
 git clone https://github.com/lexibank/lexibank-analysed.git data/lexibank-analysed --branch v2.1
 git clone https://github.com/lexibank/johanssonsoundsymbolic data/johanssonsoundsymbolic --branch v1.3
 git clone https://github.com/glottolog/glottolog-cldf data/glottolog --branch v5.1
+git clone https://github.com/concepticon/concepticon-data data/concepticon --branch v3.4.0
 ```
 
 We have to add the missing concepts to the database from the original study.

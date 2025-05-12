@@ -4,7 +4,7 @@ from pyconcepticon import Concepticon
 from clldutils.misc import slug
 from tabulate import tabulate
 
-conc = Concepticon()
+conc = Concepticon('data/concepticon/')
 
 joh = conc.conceptlists['Johansson-2020-344'].concepts
 tad = conc.conceptlists['Tadmor-2009-100'].concepts
