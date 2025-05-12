@@ -13,3 +13,4 @@ old/data_derived/repl2024*
 02_analysis/data_derived/fit*
 data.csv
 *.sqlite3
+/venv
