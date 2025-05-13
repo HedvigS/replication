@@ -175,14 +175,14 @@ print(xtable(results_table), type="latex", include.rownames=FALSE)
 # Plot for each sound class
 for (sc in soundClasses) {
   test <- combined_full %>%
-    filter(myvar == sc) %>% 
+    filter(myvar == sc, outcome !='Doubtful') %>% 
     ggplot(aes(
       x=mean, y=new_label,
       xmin=lwr, xmax=upr,
-      color=outcome, size=outcome
+      color=outcome
       )) +
     geom_errorbar(linewidth=1.5, width=0) +
-    geom_point(aes(fill=outcome), shape=21) +
+    geom_point(aes(fill=outcome, size=outcome), shape=21) +
     geom_vline(xintercept=0, color='black', linetype="dashed") +
     annotate('rect', xmin=lwr_thresh, xmax=upr_thresh, ymin=0, ymax=Inf, alpha=.1) +
     facet_wrap( ~ result, ncol=2, drop=F) +
@@ -192,7 +192,7 @@ for (sc in soundClasses) {
       breaks=seq(-1, 1, by=0.5),
       labels=seq(-1, 1, by=0.5)) +
     scale_y_discrete(name=NULL, position = "right") +
-    scale_size_manual(name='', values=c(3, 3)) +
+    scale_size_manual(name='', values=c(5, 3)) +
     scale_color_manual(name='', values=c('Weak'=colors_10[1], 'Strong'=colors_10[2]))+
     scale_fill_manual(name='', values=c('Weak'=colors_10[1], 'Strong'=colors_10[2]))+
     theme_bw() +
