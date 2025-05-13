@@ -7,7 +7,7 @@ library(stringr)
 library(tidyr)
 library(xtable)
 
-
+options(dplyr.summarise.inform = FALSE)
 colors_10 <- c('#0c71ff', '#ca2800', '#ff28ba', '#000096', '#86e300', '#1c5951', '#20d2ff', '#20ae86', '#590000', '#65008e')
 soundClasses <- c('backness', 'height', 'roundedness', 'extreme',  'voicing', 
                   'extreme_roundedness','manner', 'manner_voicing', 'position',
@@ -17,7 +17,9 @@ myfiles <- paste0(soundClasses, '.csv')
 df <- map_df(myfiles, ~ {
   new_file <- paste0('posterior_draws/', .x)
   if (file.exists(new_file)) {
-    temp <- read_csv(new_file)
+    temp <- read_csv(
+      new_file, show_col_types=F, col_types=cols_only(
+        concept='c', category='c', mean='?', sd='?', lwr='?', upr='?'))
     temp$myvar <- gsub('\\.csv$', '', .x)
     return(temp)
   }})
@@ -26,10 +28,10 @@ upr_thresh <- log(1.25)
 lwr_thresh <- log(1/1.25)
 
 # Pre-Process dataframes
-orig <- read_tsv('original_results_mapped.csv') %>% 
+orig <- read_tsv('original_results_mapped.csv',  show_col_types=F) %>% 
   select(word, group, fit, lwr, upr, topCardinal, myvar) %>% 
   rename(mean=fit, category=group, concept=word) %>% 
-  mutate(result='Original Results', sd=NA, word_dim=NA,
+  mutate(result='Original Results', sd=NA,
          category=str_replace(category, '-voice', '-unvoiced'),
          category=str_replace(category, '\\+voice', '-voiced'),
          # Outcome is Strong if HPDI outside of ROPE
@@ -65,15 +67,23 @@ wide_data <- combined_full %>%
   rename(old='Original Results', new='New Results') %>%
   # Filter out wrong category of 7 entries
   filter(category!='NA-unvoiced') %>% 
-  mutate(m_label=paste0(myvar, '_', category, '_', concept))
+  mutate(m_label=paste0(myvar, '_', category, '_', concept)) %>% 
+  # drop [vibrant-unvoiced], [nasal-unvoiced], [lateral-unvoiced]
+  # They are not present in the data
+  drop_na(old, new)
 
 
 pearson_corr <- cor.test(wide_data$old, wide_data$new, method="pearson")
+
+p_value_corr <- ifelse(identical(pearson_corr$p.value, 0), '2.2e-16', pearson_corr$p.value)
 corr_label <- paste("Pearson's r=", round(pearson_corr$estimate, 2),
-                    "\np-value < ", '2.2e-16')
+                    "\np-value < ", p_value_corr)
+
+model <- lm(new ~ splines::bs(old, 3), data = wide_data)
+coef(model)
 
 correlation_plot <- ggplot(wide_data, aes(x=old, y=new)) +
-  geom_point(aes(fill=myvar), alpha=0.7, size=2, shape=21) +
+  geom_point(aes(fill=myvar), alpha=0.6, size=2, shape=21) +
   geom_smooth(method = lm, formula = y ~ splines::bs(x, 3), color="red", fill="gray", se=TRUE, linewidth=1.5, alpha=0.5) +
   geom_abline(slope=1, intercept=0, color="black", linetype="dashed", linewidth=1.5) +
   theme_bw() +
@@ -103,17 +113,11 @@ highest_new <- wide_data %>% arrange(-abs(new)) %>% head(n=5) %>% pull(new_label
 highest_old <- wide_data %>% arrange(-abs(old)) %>% head(n=3) %>% pull(new_label)
 
 manhattan_style <- wide_data %>% 
-  # drop [vibrant-unvoiced], [nasal-unvoiced], [lateral-unvoiced]
-  # They are not present in the data
-  drop_na(old, new) %>% 
   ggplot(aes(x=m_label)) +
-
-  geom_point(aes(y=old), fill="black", size=2, alpha=0.9, shape=21) +
-  geom_point(aes(y=new, fill=myvar), size=2, alpha=0.7, shape=21) +
-  
+  geom_point(aes(y=old), fill="black", size=2, alpha=0.5, shape=24) +
+  geom_point(aes(y=new, fill=myvar), size=2, alpha=0.5, shape=21) +
   geom_label_repel(data=subset(wide_data, new_label %in% highest_new), aes(y=new, label=new_label),
                    size=2, seed=161, box.padding=0.5) +
-
   scale_x_discrete(expand=c(.01, .01)) +
   scale_fill_manual(values=colors_10) +
   annotate('rect', xmin=0, xmax=Inf, ymin=lwr_thresh, ymax=upr_thresh, alpha=.5) +
@@ -154,7 +158,7 @@ combined_full %>% filter(concept=='BREAST', result=='New Results', myvar=='manne
 
 ################################################################################################
 # Table stuff for paper
-combined_full %>% select(-word_dim, -topCardinal) %>% write_csv(, file='data/final_results.csv')
+combined_full %>% select(-topCardinal) %>% write_csv(, file='data/final_results.csv')
 
 results_table <- combined_full %>% 
   filter(outcome!='Doubtful') %>% 
