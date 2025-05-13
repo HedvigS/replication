@@ -77,16 +77,25 @@ We can now switch to the `02_analysis` folder.
 cd ../02_analysis
 ```
 
-### File overview
+### 02_analysis files overview
 
 - `01_priors.R` - The distributions for my priors.
 - `02_preprocess.R` - This script returns the data files for the individual phonetic categories. Creates
 - `03_models.R` - Running the model for all 10 phonetic categories.
 - `04_plots.R` - Loading the individual results and comparing them to the original results.
 
+```shell
+Rscript packages.R
+Rscript 01_priors.R
+Rscript 02_preprocess.R
+Rscript 03_models.R
+Rscript 04_plots.R
+
+```
+
 The models and posterior predictive simulations can be accessed on OSF: <>
 
-Please extract the two folders (`posterior_draws/` and `models/`) and put them into the main folder in order to have the directory-setup working.
+Please extract the two folders (`posterior_draws/` and `models/`) and put them into the folder 02_analysis in order to have the directory-setup working.
 
 ### Evaluation thresholds
 
