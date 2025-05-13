@@ -8,7 +8,7 @@ library(dplyr)
 library(matrixcalc) # check positive-definiteness
 
 # What levels are we modeling?
-myvar <- 'manner_voicing'
+myvar <- 'extreme_roundedness'
 
 # 2: voicing, roundedness
 # 3: height, backness
@@ -45,7 +45,7 @@ data2 <-  list(
   geo_vcv=geo_vcv
 )
 
-myPropVars <- read_csv('../01_preprocessing/data.csv', na=c('')) %>%
+myPropVars <- read_csv('../01_preprocessing/data/data.csv', na=c('')) %>%
   mutate(
     extreme_roundedness=ifelse(!is.na(extreme), paste(extreme, roundedness, sep='-'), NA),
     manner_voicing=ifelse(!is.na(voicing), paste(manner, voicing, sep='-'), NA),
